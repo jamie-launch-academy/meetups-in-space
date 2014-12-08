@@ -1,0 +1,6 @@
+
+  Here are our meetups!
+
+  <% @meetups.all.each do |meetup| %>
+  <li><a href='/meetups/<%= meetup.id %>'><%= meetup.name %></a></li>
+  <% end %>
