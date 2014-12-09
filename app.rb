@@ -31,8 +31,12 @@ def authenticate!
 end
 
 get '/' do
-  @meetups = Meetup.all
   erb :index
+end
+
+get '/meetups_list' do
+  @meetups = Meetup.all
+  erb :meetups_list
 end
 
 get '/meetups/:id' do
@@ -41,18 +45,26 @@ get '/meetups/:id' do
   erb :meetups
 end
 
-post '/' do
-  @name = params["name"]
-  @description = params["description"]
-  @location = params["location"]
+get '/create_meetup' do
+
+  erb :create_meetup
+end
+
+post '/create_meetup' do
+  @name = params[:name]
+  @description = params[:description]
+  @location = params[:location]
+  @all = Meetup.create(name: @name, description: @description, location: @location)
   # The params come from the form name section on index.erb.
 
-  @all = Meetup.create(name: @name, description: @description, location: @location)
-  @all.save
+  if @name.empty? || @description.empty? || @location.empty?
+    flash[:notice] = "You must enter information in every field"
 
-  flash[:notice] = "You have successfully created a meetup."
-
-  redirect '/'
+    redirect "/create_meetup"
+  else
+     flash[:notice] = "You have successfully created a meetup."
+     redirect "/meetups/#{@all[:id]}"
+  end
 end
 
 get '/auth/github/callback' do
@@ -62,7 +74,7 @@ get '/auth/github/callback' do
   set_current_user(user)
   flash[:notice] = "You're now signed in as #{user.username}!"
 
-  redirect '/'
+  redirect '/meetups_list'
 end
 
 get '/sign_out' do

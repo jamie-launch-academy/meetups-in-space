@@ -11,10 +11,15 @@
 
 <div class="top-bar">
   <div class="container">
-    <a class="logo" href="/meetups">Meetups in Space</a>
+    <% if signed_in? %>
+    <a class="logo" href="/meetups_list">Meetups in Space</a>
+    <% else %>
+    <a class="logo" href="/">Meetups in Space</a>
+    <% end %>
 
     <ul class="top-bar-section">
       <% if signed_in? %>
+        <li><a href="/create_meetup">Create new meetup</a></li>
         <li>Signed in as <%= current_user.username %></a></li>
         <li><a href="/sign_out">Sign out</a></li>
       <% else %>
