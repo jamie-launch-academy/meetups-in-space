@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require 'sinatra/flash'
 require 'omniauth-github'
+require 'pry'
 
 require_relative 'config/application'
 
@@ -38,6 +39,20 @@ get '/meetups/:id' do
   @meetups = Meetup.find(params[:id])
 
   erb :meetups
+end
+
+post '/' do
+  @name = params["name"]
+  @description = params["description"]
+  @location = params["location"]
+  # The params come from the form name section on index.erb.
+
+  @all = Meetup.create(name: @name, description: @description, location: @location)
+  @all.save
+
+  flash[:notice] = "You have successfully created a meetup."
+
+  redirect '/'
 end
 
 get '/auth/github/callback' do
