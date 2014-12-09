@@ -8,6 +8,10 @@ require_relative 'config/application'
 
 Dir['app/**/*.rb'].each { |file| require_relative file }
 
+#######################
+#######  METHODS  #####
+#######################
+
 helpers do
   def current_user
     user_id = session[:user_id]
@@ -30,6 +34,10 @@ def authenticate!
   end
 end
 
+#######################
+#######  ROUTES  ######
+#######################
+
 get '/' do
   erb :index
 end
@@ -41,8 +49,19 @@ end
 
 get '/meetups/:id' do
   @meetups = Meetup.find(params[:id])
+  @users = @meetups.users
 
   erb :meetups
+end
+
+post '/meetups/:id' do
+  @user_id = current_user[:id]
+  @meetup_id = params[:id]
+
+  Rsvp.create(user_id: @user_id, meetup_id: @meetup_id)
+
+  flash[:notice] = "You have successfully joined this meetup"
+  redirect "/meetups/#{@meetup_id}"
 end
 
 get '/create_meetup' do
@@ -55,7 +74,6 @@ post '/create_meetup' do
   @description = params[:description]
   @location = params[:location]
   @all = Meetup.create(name: @name, description: @description, location: @location)
-  # The params come from the form name section on index.erb.
 
   if @name.empty? || @description.empty? || @location.empty?
     flash[:notice] = "You must enter information in every field"
