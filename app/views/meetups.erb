@@ -3,16 +3,24 @@
 <h3>Description:</h3><ul><%="#{@meetups.description}"%></ul>
 <h3>Location:</h3><ul><%="#{@meetups.location}"%></ul>
 
-<% if signed_in? %>
-<h3>Attendees:</h3>
-<% @users.each do |t| %>
-  <ul><img width="30px" height="30px" src="<%= t.avatar_url %>">
-  <%= t.username %></ul>
+  <h3>Attendees:</h3>
+  <% @users.each do |t| %>
+    <ul><img width="30px" height="30px" src="<%= t.avatar_url %>">
+    <%= t.username %></ul>
   <% end %>
 
-  <form method='POST'>
-    <ul><button type='submit'>Join Meetup</button></ul>
+<% if signed_in? %>
+  <form action="/meetups/<%= @meetups.id %>" method='POST'>
+    <% if member?(@meetups.id, session[:user_id]) %>
+    <input type='hidden' name="leave">
+    <button type='submit'>Leave Meetup</button>
+
     <% else %>
-    <ul><a href="/auth/github"><button type='github'>Sign In</button></a></ul>
+    <input type='hidden' name="join">
+    <button type='submit'>Join Meetup</button>
     <% end %>
   </form>
+  <% else %>
+
+    <ul><a href="/auth/github"><button type='github'>Sign In</button></a></ul>
+<% end %>

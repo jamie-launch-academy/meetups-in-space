@@ -34,6 +34,12 @@ def authenticate!
   end
 end
 
+def member?(meetup_id, user_id)
+  if signed_in?
+    !Rsvp.where(['user_id = ? AND meetup_id = ?', user_id, meetup_id]).empty?
+  end
+end
+
 #######################
 #######  ROUTES  ######
 #######################
@@ -58,9 +64,14 @@ post '/meetups/:id' do
   @user_id = current_user[:id]
   @meetup_id = params[:id]
 
-  Rsvp.create(user_id: @user_id, meetup_id: @meetup_id)
-
-  flash[:notice] = "You have successfully joined this meetup"
+  if params[:leave]
+    remove_user = Rsvp.where('user_id = ? AND meetup_id = ?', session[:user_id], params[:id]).last
+    remove_user.destroy
+    flash[:notice] = "You have successfully been removed from this meetup"
+  else params[:join]
+    Rsvp.create(user_id: @user_id, meetup_id: @meetup_id)
+    flash[:notice] = "You have successfully joined this meetup"
+  end
   redirect "/meetups/#{@meetup_id}"
 end
 
