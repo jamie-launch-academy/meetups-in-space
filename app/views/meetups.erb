@@ -10,17 +10,19 @@
   <% end %>
 
 <% if signed_in? %>
-  <form action="/meetups/<%= @meetups.id %>" method='POST'>
-    <% if member?(@meetups.id, session[:user_id]) %>
-    <input type='hidden' name="leave">
-    <button type='submit'>Leave Meetup</button>
+
+  <% if @meetups.users.include?(current_user) %>
+
+      <form action="/meetups/<%= @meetups.id %>/leave" method='POST'>
+      <button type='submit'>Leave Meetup</button>
 
     <% else %>
-    <input type='hidden' name="join">
-    <button type='submit'>Join Meetup</button>
+
+      <form action="/meetups/<%= @meetups.id %>/join" method='POST'>
+      <button type='submit'>Join Meetup</button>
+
     <% end %>
-  </form>
   <% else %>
 
-    <ul><a href="/auth/github"><button type='github'>Sign In</button></a></ul>
+  <ul><a href="/auth/github"><button type='github'>Sign In</button></a></ul>
 <% end %>
